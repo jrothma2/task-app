@@ -84,6 +84,12 @@ Deno.serve(async (req) => {
     }
 
     // Create Checkout session for new subscribers
+    if (!STRIPE_PRICE_ID || STRIPE_PRICE_ID === "price_xxxxx" || STRIPE_PRICE_ID.startsWith("price_xxx")) {
+      throw new Error(
+        "STRIPE_PRICE_ID is not configured or is set to a placeholder value. Please set it using: supabase secrets set STRIPE_PRICE_ID=price_xxx (replace with your actual Stripe price ID from your Stripe dashboard)"
+      );
+    }
+
     const session = await stripe.checkout.sessions.create({
       customer: profile.stripe_customer_id,
       line_items: [

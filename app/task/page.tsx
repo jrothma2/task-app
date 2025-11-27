@@ -30,6 +30,7 @@ import {
 } from "lucide-react";
 import { labels } from "@/lib/labels";
 import { format } from "date-fns";
+import { enUS } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { useSearchParams } from "next/navigation";
 import { useTaskManager } from "@/hooks/useTaskManager";
@@ -242,7 +243,7 @@ function TaskForm() {
                 )}
               >
                 <CalendarIcon className="mr-2 h-4 w-4" />
-                {date ? format(date, "PPP") : <span>Pick a date</span>}
+                {date ? format(date, "PPP", { locale: enUS }) : <span>Pick a date</span>}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start">
