@@ -70,7 +70,7 @@ Deno.serve(async (req) => {
       throw new Error("No Stripe customer found");
     }
 
-    const originUrl = req.headers.get("origin") ?? "http://localhost:3000";
+    const originUrl = req.headers.get("origin") ?? "https://task-app-chi-murex.vercel.app/";
 
     // Create Portal session if already subscribed
     if (profile.subscription_plan === "premium") {
