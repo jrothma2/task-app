@@ -11,6 +11,7 @@ export type Database = {
     Tables: {
       profiles: {
         Row: {
+          background_color: string | null
           created_at: string | null
           name: string | null
           stripe_customer_id: string | null
@@ -20,6 +21,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          background_color?: string | null
           created_at?: string | null
           name?: string | null
           stripe_customer_id?: string | null
@@ -29,6 +31,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          background_color?: string | null
           created_at?: string | null
           name?: string | null
           stripe_customer_id?: string | null
