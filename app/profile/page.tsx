@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LoadingSkeleton } from "@/components/LoadingSkeleton";
 import { useSubscription } from "@/hooks/useSubscription";
 import { useAuth } from "@/hooks/useAuth";
+import { ColorPicker } from "@/components/ColorPicker";
 
 export default function Profile() {
   const { user, isLoading, signOut } = useAuth();
@@ -44,6 +45,7 @@ export default function Profile() {
           </Button>
         </CardContent>
       </Card>
+      <ColorPicker />
       <div className="flex justify-end">
         <Button variant="outline" onClick={signOut}>
           <LogOut className="mr-2 h-4 w-4" />

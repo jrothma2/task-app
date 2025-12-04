@@ -1,0 +1,71 @@
+"use client";
+
+import { useColorPreference, BackgroundColor } from "@/hooks/useColorPreference";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+
+const colorOptions: Array<{
+  value: BackgroundColor;
+  label: string;
+  preview: string;
+}> = [
+  {
+    value: "light-blue",
+    label: "Light Blue",
+    preview: "bg-blue-100",
+  },
+  {
+    value: "gradient",
+    label: "Blue-Violet Gradient",
+    preview: "bg-gradient-to-br from-blue-600 to-violet-600",
+  },
+  {
+    value: "yellow",
+    label: "Yellow",
+    preview: "bg-yellow-100",
+  },
+  {
+    value: "red",
+    label: "Red",
+    preview: "bg-red-100",
+  },
+  {
+    value: "green",
+    label: "Green",
+    preview: "bg-green-100",
+  },
+];
+
+export function ColorPicker() {
+  const { color, updateColor } = useColorPreference();
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Background Color</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="flex flex-wrap gap-3">
+          {colorOptions.map((option) => (
+            <Button
+              key={option.value}
+              variant={color === option.value ? "default" : "outline"}
+              onClick={() => updateColor(option.value)}
+              className="flex flex-col items-center gap-2 h-auto p-4"
+            >
+              <div
+                className={`w-12 h-12 rounded-md ${option.preview} border-2 ${
+                  color === option.value
+                    ? "border-primary"
+                    : "border-gray-300"
+                }`}
+              />
+              <span className="text-xs">{option.label}</span>
+            </Button>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
