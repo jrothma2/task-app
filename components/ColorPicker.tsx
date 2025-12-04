@@ -13,7 +13,7 @@ const colorOptions: Array<{
   {
     value: "light-blue",
     label: "Light Blue",
-    preview: "bg-blue-100",
+    preview: "bg-blue-600",
   },
   {
     value: "gradient",
@@ -23,17 +23,17 @@ const colorOptions: Array<{
   {
     value: "yellow",
     label: "Yellow",
-    preview: "bg-yellow-100",
+    preview: "bg-yellow-600",
   },
   {
     value: "red",
     label: "Red",
-    preview: "bg-red-100",
+    preview: "bg-red-600",
   },
   {
     value: "green",
     label: "Green",
-    preview: "bg-green-100",
+    preview: "bg-green-600",
   },
 ];
 

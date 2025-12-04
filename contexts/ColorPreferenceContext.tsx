@@ -7,11 +7,11 @@ const COLOR_STORAGE_KEY = "background-color-preference";
 const DEFAULT_COLOR: BackgroundColor = "light-blue";
 
 const colorClasses: Record<BackgroundColor, string> = {
-  "light-blue": "bg-blue-100",
+  "light-blue": "bg-blue-600",
   "gradient": "bg-gradient-to-br from-blue-600 to-violet-600",
-  "yellow": "bg-yellow-100",
-  "red": "bg-red-100",
-  "green": "bg-green-100",
+  "yellow": "bg-yellow-600",
+  "red": "bg-red-600",
+  "green": "bg-green-600",
 };
 
 interface ColorPreferenceContextType {
