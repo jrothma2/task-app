@@ -1,6 +1,7 @@
 "use client";
 
-import { useColorPreference, BackgroundColor } from "@/hooks/useColorPreference";
+import { useColorPreference } from "@/contexts/ColorPreferenceContext";
+import type { BackgroundColor } from "@/hooks/useColorPreference";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 

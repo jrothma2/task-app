@@ -7,7 +7,8 @@ import Footer from "@/components/Footer";
 import { Card, CardContent } from "@/components/ui/card";
 import { RouteGuard } from "@/components/RouteGuard";
 import { Toaster } from "@/components/ui/toaster";
-import { useColorPreference } from "@/hooks/useColorPreference";
+import { ColorPreferenceProvider } from "@/contexts/ColorPreferenceContext";
+import { BackgroundColorBody } from "@/components/BackgroundColorBody";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -16,26 +17,24 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { colorClass } = useColorPreference();
-
   return (
     <html lang="en">
-      <body
-        className={`${inter.className} ${colorClass} min-h-screen`}
-      >
-        <div className="flex flex-col min-h-screen">
-          <Header />
-          <main className="flex-grow container mx-auto px-4 py-8">
-            <Card className="w-full max-w-2xl mx-auto">
-              <CardContent className="p-6">
-                <RouteGuard>{children}</RouteGuard>
-              </CardContent>
-            </Card>
-          </main>
-          <Footer />
-        </div>
-        <Toaster />
-      </body>
+      <ColorPreferenceProvider>
+        <BackgroundColorBody inter={inter}>
+          <div className="flex flex-col min-h-screen">
+            <Header />
+            <main className="flex-grow container mx-auto px-4 py-8">
+              <Card className="w-full max-w-2xl mx-auto">
+                <CardContent className="p-6">
+                  <RouteGuard>{children}</RouteGuard>
+                </CardContent>
+              </Card>
+            </main>
+            <Footer />
+          </div>
+          <Toaster />
+        </BackgroundColorBody>
+      </ColorPreferenceProvider>
     </html>
   );
 }
