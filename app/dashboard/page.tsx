@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { useTaskManager } from "@/hooks/useTaskManager";
+import { createBrowserClient } from "@supabase/ssr";
 import { Button } from "@/components/ui/button";
 import TaskList from "@/components/TaskList";
 import { CreateTaskForm } from "@/components/CreateTaskForm";
@@ -28,14 +29,38 @@ type SortOption = "title" | "label" | "due_date" | "none";
 export default function Dashboard() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [sortBy, setSortBy] = useState<SortOption>("none");
-  const { createTask, refreshTasks, tasks, deleteTask, toggleTaskComplete } =
+  const { createTask, refreshTasks, tasks, deleteTask, toggleTaskComplete, rewordTaskWithAI } =
     useTaskManager();
+
+  const supabase = createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  );
 
   const handleCreateTask = async (title: string, description: string) => {
     await createTask(title, description);
     await refreshTasks();
     console.log(`New Task Created: ${title}`);
     setIsDialogOpen(false);
+  };
+
+  const handleAcceptReword = async (taskId: string, title: string, description: string) => {
+    try {
+      const { error } = await supabase
+        .from("tasks")
+        .update({
+          title,
+          description,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("task_id", taskId);
+
+      if (error) throw error;
+      await refreshTasks();
+    } catch (error: any) {
+      console.error("Error updating task:", error);
+      throw error;
+    }
   };
 
   const sortedTasks = useMemo(() => {
@@ -117,6 +142,8 @@ export default function Dashboard() {
               tasks={sortedTasks}
               onDelete={deleteTask}
               onToggleComplete={toggleTaskComplete}
+              onReword={rewordTaskWithAI}
+              onAcceptReword={handleAcceptReword}
             />
           </div>
         </div>

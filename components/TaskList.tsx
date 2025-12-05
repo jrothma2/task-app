@@ -12,9 +12,14 @@ interface TaskListProps {
   tasks: Task[];
   onDelete: (taskId: string) => Promise<void>;
   onToggleComplete: (taskId: string, completed: boolean) => Promise<void>;
+  onReword: (taskId: string) => Promise<{
+    original: { title: string | null; description: string | null };
+    suggested: { title: string; description: string };
+  }>;
+  onAcceptReword: (taskId: string, title: string, description: string) => Promise<void>;
 }
 
-const TaskList = ({ tasks, onDelete, onToggleComplete }: TaskListProps) => {
+const TaskList = ({ tasks, onDelete, onToggleComplete, onReword, onAcceptReword }: TaskListProps) => {
   return (
     <Table>
       <TableHeader>
@@ -33,6 +38,8 @@ const TaskList = ({ tasks, onDelete, onToggleComplete }: TaskListProps) => {
             task={task}
             onDelete={onDelete}
             onToggleComplete={onToggleComplete}
+            onReword={onReword}
+            onAcceptReword={onAcceptReword}
           />
         ))}
       </TableBody>

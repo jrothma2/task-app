@@ -23,6 +23,10 @@ export interface TasksOperations {
   deleteTask: (taskId: string) => Promise<void>;
   toggleTaskComplete: (taskId: string, completed: boolean) => Promise<void>;
   refreshTasks: () => Promise<void>;
+  rewordTaskWithAI: (taskId: string) => Promise<{
+    original: { title: string | null; description: string | null };
+    suggested: { title: string; description: string };
+  }>;
 }
 
 export type UseTaskManagerReturn = TaskState &

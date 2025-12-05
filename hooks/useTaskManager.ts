@@ -10,6 +10,7 @@ import {
 
 const MAX_FILE_SIZE = 1024 * 1024; // 1MB
 const FUNCTION_ENDPOINT = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/create-task-with-ai`;
+const REWORD_FUNCTION_ENDPOINT = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/reword-task-with-ai`;
 
 interface UseTaskManagerReturn
   extends TaskState,
@@ -248,6 +249,41 @@ export function useTaskManager(taskId?: string): UseTaskManagerReturn {
     await fetchTasks();
   };
 
+  const rewordTaskWithAI = async (taskId: string) => {
+    try {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (!session) {
+        throw new Error("No session found");
+      }
+
+      const response = await fetch(REWORD_FUNCTION_ENDPOINT, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({ task_id: taskId }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to reword task");
+      }
+
+      const data = await response.json();
+      if (!data) throw new Error("No data returned from server");
+
+      return data;
+    } catch (error: any) {
+      console.error("Error rewording task:", error);
+      setError(error.message);
+      throw error;
+    }
+  };
+
   return {
     // State
     task,
@@ -268,5 +304,6 @@ export function useTaskManager(taskId?: string): UseTaskManagerReturn {
     deleteTask,
     toggleTaskComplete,
     refreshTasks,
+    rewordTaskWithAI,
   };
 }
