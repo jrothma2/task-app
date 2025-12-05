@@ -67,12 +67,20 @@ Deno.serve(async (req) => {
       apiKey: OPENAI_API_KEY,
     });
 
+    // Check if original task has a description
+    const hasOriginalDescription = task.description && task.description.trim() !== "";
+    
     // Create prompt for rewording
-    const prompt = `Please reword the following task to make it clearer and more professional while maintaining the original intent and meaning. Return your response as a JSON object with two fields: "title" and "description".
+    const descriptionInstruction = hasOriginalDescription 
+      ? 'Include a "description" field with the reworded description.'
+      : 'If there was no original description, you may include an empty "description" field or omit it entirely.';
+    
+    const prompt = `Please reword the following task to make it clearer and more professional while maintaining the original intent and meaning. Return your response as a JSON object with a "title" field and optionally a "description" field.
 
 Original title: "${task.title || ""}"
-Original description: "${task.description || ""}"
+${hasOriginalDescription ? `Original description: "${task.description}"` : "Original description: (none)"}
 
+${descriptionInstruction}
 Return only the JSON object, no additional text. Example format:
 {"title": "Reworded title here", "description": "Reworded description here"}`;
 
@@ -121,18 +129,25 @@ Return only the JSON object, no additional text. Example format:
       }
     }
 
-    // Validate the response has required fields (check for existence and non-empty strings)
+    // Validate the response has required fields
+    // Title is always required and must be non-empty
+    // Description is only required if the original task had a description
     const missingFields: string[] = [];
     if (!normalizedResponse.title || typeof normalizedResponse.title !== "string" || normalizedResponse.title.trim() === "") {
       missingFields.push("title");
     }
-    if (!normalizedResponse.description || typeof normalizedResponse.description !== "string" || normalizedResponse.description.trim() === "") {
-      missingFields.push("description");
+    
+    // Only require description if the original task had one
+    if (hasOriginalDescription) {
+      if (!normalizedResponse.description || typeof normalizedResponse.description !== "string" || normalizedResponse.description.trim() === "") {
+        missingFields.push("description");
+      }
     }
 
     if (missingFields.length > 0) {
       console.error("AI response missing required fields:", {
         missingFields,
+        hasOriginalDescription,
         receivedResponse: suggestedRewording,
         normalizedResponse,
         rawResponse: responseContent
@@ -140,10 +155,11 @@ Return only the JSON object, no additional text. Example format:
       throw new Error(`AI response missing required fields: ${missingFields.join(", ")}`);
     }
 
-    // At this point, we know both fields exist and are non-empty strings
+    // At this point, we know title exists and is non-empty
+    // Description may be empty/null if original had no description
     const validatedRewording: { title: string; description: string } = {
       title: normalizedResponse.title!,
-      description: normalizedResponse.description!,
+      description: normalizedResponse.description || "",
     };
 
     console.log(`✨ AI Suggested Rewording:`, validatedRewording);
@@ -157,7 +173,7 @@ Return only the JSON object, no additional text. Example format:
         },
         suggested: {
           title: validatedRewording.title,
-          description: validatedRewording.description,
+          description: validatedRewording.description || "",
         },
       }),
       {

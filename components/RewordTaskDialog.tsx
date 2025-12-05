@@ -165,7 +165,7 @@ export function RewordTaskDialog({
                     AI Suggested Description
                   </h4>
                   <p className="text-sm bg-primary/10 p-3 rounded-md border border-primary/20 whitespace-pre-wrap">
-                    {suggestions.suggested.description}
+                    {suggestions.suggested.description || "(No description)"}
                   </p>
                 </div>
               </div>
