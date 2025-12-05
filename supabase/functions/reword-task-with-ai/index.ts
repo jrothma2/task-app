@@ -97,17 +97,56 @@ Return only the JSON object, no additional text. Example format:
         .replace(/```\s*/g, "")
         .trim();
       suggestedRewording = JSON.parse(cleanedContent);
+      
+      // Ensure the parsed response is an object
+      if (typeof suggestedRewording !== "object" || suggestedRewording === null || Array.isArray(suggestedRewording)) {
+        throw new Error("AI response is not a valid object");
+      }
     } catch (parseError) {
-      console.error("Failed to parse AI response:", responseContent);
+      console.error("Failed to parse AI response:", {
+        error: parseError instanceof Error ? parseError.message : String(parseError),
+        rawResponse: responseContent
+      });
       throw new Error("Failed to parse AI response");
     }
 
-    // Validate the response has required fields
-    if (!suggestedRewording.title || !suggestedRewording.description) {
-      throw new Error("AI response missing required fields");
+    // Normalize field names (handle case variations)
+    const normalizedResponse: { title?: string; description?: string } = {};
+    for (const key in suggestedRewording) {
+      const lowerKey = key.toLowerCase();
+      if (lowerKey === "title") {
+        normalizedResponse.title = suggestedRewording[key];
+      } else if (lowerKey === "description") {
+        normalizedResponse.description = suggestedRewording[key];
+      }
     }
 
-    console.log(`✨ AI Suggested Rewording:`, suggestedRewording);
+    // Validate the response has required fields (check for existence and non-empty strings)
+    const missingFields: string[] = [];
+    if (!normalizedResponse.title || typeof normalizedResponse.title !== "string" || normalizedResponse.title.trim() === "") {
+      missingFields.push("title");
+    }
+    if (!normalizedResponse.description || typeof normalizedResponse.description !== "string" || normalizedResponse.description.trim() === "") {
+      missingFields.push("description");
+    }
+
+    if (missingFields.length > 0) {
+      console.error("AI response missing required fields:", {
+        missingFields,
+        receivedResponse: suggestedRewording,
+        normalizedResponse,
+        rawResponse: responseContent
+      });
+      throw new Error(`AI response missing required fields: ${missingFields.join(", ")}`);
+    }
+
+    // At this point, we know both fields exist and are non-empty strings
+    const validatedRewording: { title: string; description: string } = {
+      title: normalizedResponse.title!,
+      description: normalizedResponse.description!,
+    };
+
+    console.log(`✨ AI Suggested Rewording:`, validatedRewording);
 
     // Return the original and suggested rewording
     return new Response(
@@ -117,8 +156,8 @@ Return only the JSON object, no additional text. Example format:
           description: task.description,
         },
         suggested: {
-          title: suggestedRewording.title,
-          description: suggestedRewording.description,
+          title: validatedRewording.title,
+          description: validatedRewording.description,
         },
       }),
       {
